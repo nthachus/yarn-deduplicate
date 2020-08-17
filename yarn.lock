@@ -2087,7 +2087,7 @@ copy-pkg-json-webpack-plugin@^0.0.39:
   resolved "https://registry.yarnpkg.com/copy-pkg-json-webpack-plugin/-/copy-pkg-json-webpack-plugin-0.0.39.tgz#4d8c453b234b2399c24c0ee98bbc4b3852840ed3"
   integrity sha512-2K/K5EvVYHhG4sZbDX942x/H5k5N4bicnjXAIET2EuTzqMzzjD1iqlprLYXYVCmQBvc2FRGf7+e3poQ0wJsI0Q==
 
-copy-webpack-plugin@^5.1.0:
+copy-webpack-plugin@^5.1.1:
   version "5.1.1"
   resolved "https://registry.yarnpkg.com/copy-webpack-plugin/-/copy-webpack-plugin-5.1.1.tgz#5481a03dea1123d88a988c6ff8b78247214f0b88"
   integrity sha512-P15M5ZC8dyCjQHWwd4Ia/dm0SgVvZJMYeykVIVYXbGyqO4dWB5oyPHp9i7wjwo5LhtlhKbiBCdS2NvM07Wlybg==
