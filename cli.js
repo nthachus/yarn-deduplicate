@@ -42,15 +42,11 @@
         return __webpack_require__.d(getter, "a", getter), getter;
     }, __webpack_require__.o = function(object, property) {
         return Object.prototype.hasOwnProperty.call(object, property);
-    }, __webpack_require__.p = "", __webpack_require__(__webpack_require__.s = 22);
-}([ , , , , , function(module, exports) {
+    }, __webpack_require__.p = "", __webpack_require__(__webpack_require__.s = 1);
+}([ function(module, exports) {
     module.exports = require("fs");
-}, , , , , , function(module, exports) {
-    module.exports = require("events");
-}, function(module, exports) {
-    module.exports = require("path");
-}, , , , , , , , , , function(module, exports, __webpack_require__) {
-    const commander = __webpack_require__(23), fs = __webpack_require__(5), _require = __webpack_require__(25), fixDuplicates = _require.fixDuplicates, listDuplicates = _require.listDuplicates, version = __webpack_require__(26).version;
+}, function(module, exports, __webpack_require__) {
+    const commander = __webpack_require__(2), fs = __webpack_require__(0), _require = __webpack_require__(6), fixDuplicates = _require.fixDuplicates, listDuplicates = _require.listDuplicates, version = __webpack_require__(7).version;
     commander.version(version).usage("[options] [yarn.lock path (default: yarn.lock)]").option("-s, --strategy <strategy>", 'deduplication strategy. Valid values: fewer, highest. Default is "highest"', "highest").option("-l, --list", "do not change yarn.lock, just output the diagnosis").option("-f, --fail", "if there are duplicates in yarn.lock, terminate the script with exit status 1").option("--scopes <scopes>", "a comma separated list of scopes to deduplicate. Defaults to all packages.", val => val.split(",").map(v => v.trim())).option("--packages <packages>", "a comma separated list of packages to deduplicate. Defaults to all packages.", val => val.split(",").map(v => v.trim())).option("--exclude <exclude>", "a comma separated list of packages not to deduplicate.", val => val.split(",").map(v => v.trim())).option("--print", "instead of saving the deduplicated yarn.lock, print the result in stdout"), 
     commander.parse(process.argv), commander.scopes && commander.packages && (console.error("Please specify either scopes or packages, not both."), 
     commander.help()), "highest" !== commander.strategy && "fewer" !== commander.strategy && (console.error("Invalid strategy " + commander.strategy), 
@@ -85,7 +81,7 @@
         console.error(e), process.exit(1);
     }
 }, function(module, exports, __webpack_require__) {
-    const EventEmitter = __webpack_require__(11).EventEmitter, spawn = __webpack_require__(24).spawn, path = __webpack_require__(12), fs = __webpack_require__(5);
+    const EventEmitter = __webpack_require__(3).EventEmitter, spawn = __webpack_require__(4).spawn, path = __webpack_require__(5), fs = __webpack_require__(0);
     class Option {
         constructor(flags, description) {
             this.flags = flags, this.required = flags.indexOf("<") >= 0, this.optional = flags.indexOf("[") >= 0, 
@@ -599,7 +595,11 @@
     (exports = module.exports = new Command).program = exports, exports.Command = Command, 
     exports.Option = Option, exports.CommanderError = CommanderError;
 }, function(module, exports) {
+    module.exports = require("events");
+}, function(module, exports) {
     module.exports = require("child_process");
+}, function(module, exports) {
+    module.exports = require("path");
 }, function(module, exports) {
     module.exports = require("./index");
 }, function(module) {

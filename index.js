@@ -1,4 +1,4 @@
-!function(modules) {
+module.exports = function(modules) {
     var installedModules = {};
     function __webpack_require__(moduleId) {
         if (installedModules[moduleId]) return installedModules[moduleId].exports;
@@ -10,7 +10,8 @@
         return modules[moduleId].call(module.exports, module, module.exports, __webpack_require__), 
         module.l = !0, module.exports;
     }
-    __webpack_require__.m = modules, __webpack_require__.c = installedModules, __webpack_require__.d = function(exports, name, getter) {
+    return __webpack_require__.m = modules, __webpack_require__.c = installedModules, 
+    __webpack_require__.d = function(exports, name, getter) {
         __webpack_require__.o(exports, name) || Object.defineProperty(exports, name, {
             enumerable: !0,
             get: getter
@@ -41,9 +42,9 @@
         return __webpack_require__.d(getter, "a", getter), getter;
     }, __webpack_require__.o = function(object, property) {
         return Object.prototype.hasOwnProperty.call(object, property);
-    }, __webpack_require__.p = "", __webpack_require__(__webpack_require__.s = 27);
+    }, __webpack_require__.p = "", __webpack_require__(__webpack_require__.s = 19);
 }([ function(module, exports, __webpack_require__) {
-    const debug = __webpack_require__(7), _require = __webpack_require__(6), MAX_LENGTH = _require.MAX_LENGTH, MAX_SAFE_INTEGER = _require.MAX_SAFE_INTEGER, _require2 = __webpack_require__(3), re = _require2.re, t = _require2.t, compareIdentifiers = __webpack_require__(13).compareIdentifiers;
+    const debug = __webpack_require__(6), _require = __webpack_require__(5), MAX_LENGTH = _require.MAX_LENGTH, MAX_SAFE_INTEGER = _require.MAX_SAFE_INTEGER, _require2 = __webpack_require__(3), re = _require2.re, t = _require2.t, compareIdentifiers = __webpack_require__(10).compareIdentifiers;
     class SemVer {
         constructor(version, options) {
             if (options && "object" == typeof options || (options = {
@@ -210,7 +211,7 @@
         }
     }
     module.exports = Range;
-    const Comparator = __webpack_require__(9), debug = __webpack_require__(7), SemVer = __webpack_require__(0), _require = __webpack_require__(3), re = _require.re, t = _require.t, comparatorTrimReplace = _require.comparatorTrimReplace, tildeTrimReplace = _require.tildeTrimReplace, caretTrimReplace = _require.caretTrimReplace, isSatisfiable = (comparators, options) => {
+    const Comparator = __webpack_require__(8), debug = __webpack_require__(6), SemVer = __webpack_require__(0), _require = __webpack_require__(3), re = _require.re, t = _require.t, comparatorTrimReplace = _require.comparatorTrimReplace, tildeTrimReplace = _require.tildeTrimReplace, caretTrimReplace = _require.caretTrimReplace, isSatisfiable = (comparators, options) => {
         let result = !0;
         const remainingComparators = comparators.slice();
         let testComparator = remainingComparators.pop();
@@ -265,7 +266,7 @@
         return !0;
     };
 }, function(module, exports, __webpack_require__) {
-    const MAX_SAFE_COMPONENT_LENGTH = __webpack_require__(6).MAX_SAFE_COMPONENT_LENGTH, debug = __webpack_require__(7), re = (exports = module.exports = {}).re = [], src = exports.src = [], t = exports.t = {};
+    const MAX_SAFE_COMPONENT_LENGTH = __webpack_require__(5).MAX_SAFE_COMPONENT_LENGTH, debug = __webpack_require__(6), re = (exports = module.exports = {}).re = [], src = exports.src = [], t = exports.t = {};
     let R = 0;
     const createToken = (name, value, isGlobal) => {
         const index = R++;
@@ -299,7 +300,7 @@
     createToken("STAR", "(<|>)?=?\\s*\\*"), createToken("GTE0", "^\\s*>=\\s*0.0.0\\s*$"), 
     createToken("GTE0PRE", "^\\s*>=\\s*0.0.0-0\\s*$");
 }, function(module, exports, __webpack_require__) {
-    const MAX_LENGTH = __webpack_require__(6).MAX_LENGTH, _require2 = __webpack_require__(3), re = _require2.re, t = _require2.t, SemVer = __webpack_require__(0);
+    const MAX_LENGTH = __webpack_require__(5).MAX_LENGTH, _require2 = __webpack_require__(3), re = _require2.re, t = _require2.t, SemVer = __webpack_require__(0);
     module.exports = (version, options) => {
         if (options && "object" == typeof options || (options = {
             loose: !!options,
@@ -314,8 +315,6 @@
             return null;
         }
     };
-}, function(module, exports) {
-    module.exports = require("fs");
 }, function(module, exports) {
     const MAX_SAFE_INTEGER = Number.MAX_SAFE_INTEGER || 9007199254740991;
     module.exports = {
@@ -378,7 +377,7 @@
         }
     }
     module.exports = Comparator;
-    const _require = __webpack_require__(3), re = _require.re, t = _require.t, cmp = __webpack_require__(21), debug = __webpack_require__(7), SemVer = __webpack_require__(0), Range = __webpack_require__(2);
+    const _require = __webpack_require__(3), re = _require.re, t = _require.t, cmp = __webpack_require__(18), debug = __webpack_require__(6), SemVer = __webpack_require__(0), Range = __webpack_require__(2);
 }, function(module, exports, __webpack_require__) {
     const Range = __webpack_require__(2);
     module.exports = (version, range, options) => {
@@ -389,10 +388,6 @@
         }
         return range.test(version);
     };
-}, function(module, exports) {
-    module.exports = require("events");
-}, function(module, exports) {
-    module.exports = require("path");
 }, function(module, exports) {
     const numeric = /^[0-9]+$/, compareIdentifiers = (a, b) => {
         const anum = numeric.test(a), bnum = numeric.test(b);
@@ -421,7 +416,7 @@
     const compare = __webpack_require__(1);
     module.exports = (a, b, loose) => compare(a, b, loose) <= 0;
 }, function(module, exports, __webpack_require__) {
-    const SemVer = __webpack_require__(0), Comparator = __webpack_require__(9), ANY = Comparator.ANY, Range = __webpack_require__(2), satisfies = __webpack_require__(10), gt = __webpack_require__(8), lt = __webpack_require__(16), lte = __webpack_require__(18), gte = __webpack_require__(17);
+    const SemVer = __webpack_require__(0), Comparator = __webpack_require__(8), ANY = Comparator.ANY, Range = __webpack_require__(2), satisfies = __webpack_require__(9), gt = __webpack_require__(7), lt = __webpack_require__(13), lte = __webpack_require__(15), gte = __webpack_require__(14);
     module.exports = (version, range, hilo, options) => {
         let gtfn, ltefn, ltfn, comp, ecomp;
         switch (version = new SemVer(version, options), range = new Range(range, options), 
@@ -454,7 +449,7 @@
     const compare = __webpack_require__(1);
     module.exports = (a, b, loose) => 0 !== compare(a, b, loose);
 }, function(module, exports, __webpack_require__) {
-    const eq = __webpack_require__(14), neq = __webpack_require__(20), gt = __webpack_require__(8), gte = __webpack_require__(17), lt = __webpack_require__(16), lte = __webpack_require__(18);
+    const eq = __webpack_require__(11), neq = __webpack_require__(17), gt = __webpack_require__(7), gte = __webpack_require__(14), lt = __webpack_require__(13), lte = __webpack_require__(15);
     module.exports = (a, op, b, loose) => {
         switch (op) {
           case "===":
@@ -489,7 +484,7 @@
             throw new TypeError("Invalid operator: " + op);
         }
     };
-}, , , , , , function(module, exports, __webpack_require__) {
+}, function(module, exports, __webpack_require__) {
     function _slicedToArray(arr, i) {
         return function(arr) {
             if (Array.isArray(arr)) return arr;
@@ -525,7 +520,7 @@
         for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
         return arr2;
     }
-    const lockfile = __webpack_require__(28), semver = __webpack_require__(36), parseYarnLock = file => lockfile.parse(file).object, getDuplicatedPackages = (json, {includeScopes: includeScopes, includePackages: includePackages, excludePackages: excludePackages, useMostCommon: useMostCommon}) => {
+    const lockfile = __webpack_require__(20), semver = __webpack_require__(31), parseYarnLock = file => lockfile.parse(file).object, getDuplicatedPackages = (json, {includeScopes: includeScopes, includePackages: includePackages, excludePackages: excludePackages, useMostCommon: useMostCommon}) => {
         const packages = ((json, includeScopes = [], includePackages = [], excludePackages = []) => {
             const packages = {}, re = /^(.*)@([^@]*?)$/;
             let resolvable = null;
@@ -625,7 +620,7 @@
             return Object.prototype.hasOwnProperty.call(object, property);
         }, __webpack_require__.p = "", __webpack_require__(__webpack_require__.s = 14);
     }([ function(module, exports) {
-        module.exports = __webpack_require__(12);
+        module.exports = __webpack_require__(21);
     }, function(module, exports, __webpack_require__) {
         "use strict";
         exports.__esModule = !0;
@@ -653,9 +648,9 @@
             };
         };
     }, function(module, exports) {
-        module.exports = __webpack_require__(29);
+        module.exports = __webpack_require__(22);
     }, function(module, exports) {
-        module.exports = __webpack_require__(5);
+        module.exports = __webpack_require__(23);
     }, function(module, exports, __webpack_require__) {
         "use strict";
         Object.defineProperty(exports, "__esModule", {
@@ -1435,7 +1430,7 @@
             }
         };
     }, , function(module, exports) {
-        module.exports = __webpack_require__(30);
+        module.exports = __webpack_require__(24);
     }, , function(module, exports) {
         var global = module.exports = "undefined" != typeof window && window.Math == Math ? window : "undefined" != typeof self && self.Math == Math ? self : Function("return this")();
         "number" == typeof __g && (__g = global);
@@ -1619,7 +1614,7 @@
         }
         exports.default = Lockfile;
     }, , , function(module, exports) {
-        module.exports = __webpack_require__(31);
+        module.exports = __webpack_require__(25);
     }, , , function(module, exports, __webpack_require__) {
         "use strict";
         Object.defineProperty(exports, "__esModule", {
@@ -1643,7 +1638,7 @@
             return obj;
         };
     }, , function(module, exports) {
-        module.exports = __webpack_require__(32);
+        module.exports = __webpack_require__(26);
     }, function(module, exports) {
         var core = module.exports = {
             version: "2.5.7"
@@ -1717,7 +1712,7 @@
     }, function(module, exports) {
         module.exports = {};
     }, function(module, exports) {
-        module.exports = __webpack_require__(33);
+        module.exports = __webpack_require__(27);
     }, , , , function(module, exports, __webpack_require__) {
         "use strict";
         Object.defineProperty(exports, "__esModule", {
@@ -1846,7 +1841,7 @@
             return "value" in Attributes && (O[P] = Attributes.value), O;
         };
     }, , , , function(module, exports) {
-        module.exports = __webpack_require__(11);
+        module.exports = __webpack_require__(28);
     }, function(module, exports, __webpack_require__) {
         "use strict";
         const Buffer = __webpack_require__(32).Buffer, crypto = __webpack_require__(9), Transform = __webpack_require__(17).Transform, SPEC_ALGORITHMS = [ "sha256", "sha384", "sha512" ], BASE64_REGEX = /^[a-z0-9+/]+(?:=?=?)$/i, SRI_REGEX = /^([^-]+)-([^?]+)([?\S*]*)$/, STRICT_SRI_REGEX = /^([^-]+)-([A-Za-z0-9+/=]{44,88})(\?[\x21-\x7E]*)*$/, VCHAR_REGEX = /^[\x21-\x7E]+$/;
@@ -2382,7 +2377,7 @@
             });
         }));
     }, , function(module, exports) {
-        module.exports = __webpack_require__(34);
+        module.exports = __webpack_require__(29);
     }, , , , function(module, exports) {
         module.exports = function(it) {
             if (null == it) throw TypeError("Can't call method on  " + it);
@@ -2730,7 +2725,7 @@
         module.exports = "win32" === process.platform ? win32 : posix, module.exports.posix = posix, 
         module.exports.win32 = win32;
     }, , , function(module, exports) {
-        module.exports = __webpack_require__(35);
+        module.exports = __webpack_require__(30);
     }, , function(module, exports, __webpack_require__) {
         "use strict";
         var _util, _invariant, _stripBom, _constants, _errors, _map;
@@ -4989,7 +4984,11 @@
         });
     } ]);
 }, function(module, exports) {
+    module.exports = require("path");
+}, function(module, exports) {
     module.exports = require("util");
+}, function(module, exports) {
+    module.exports = require("fs");
 }, function(module, exports) {
     module.exports = require("crypto");
 }, function(module, exports) {
@@ -4998,6 +4997,8 @@
     module.exports = require("assert");
 }, function(module, exports) {
     module.exports = require("os");
+}, function(module, exports) {
+    module.exports = require("events");
 }, function(module, exports) {
     module.exports = require("buffer");
 }, function(module, exports) {
@@ -5008,47 +5009,47 @@
         re: internalRe.re,
         src: internalRe.src,
         tokens: internalRe.t,
-        SEMVER_SPEC_VERSION: __webpack_require__(6).SEMVER_SPEC_VERSION,
+        SEMVER_SPEC_VERSION: __webpack_require__(5).SEMVER_SPEC_VERSION,
         SemVer: __webpack_require__(0),
-        compareIdentifiers: __webpack_require__(13).compareIdentifiers,
-        rcompareIdentifiers: __webpack_require__(13).rcompareIdentifiers,
+        compareIdentifiers: __webpack_require__(10).compareIdentifiers,
+        rcompareIdentifiers: __webpack_require__(10).rcompareIdentifiers,
         parse: __webpack_require__(4),
-        valid: __webpack_require__(37),
-        clean: __webpack_require__(38),
-        inc: __webpack_require__(39),
-        diff: __webpack_require__(40),
-        major: __webpack_require__(41),
-        minor: __webpack_require__(42),
-        patch: __webpack_require__(43),
-        prerelease: __webpack_require__(44),
+        valid: __webpack_require__(32),
+        clean: __webpack_require__(33),
+        inc: __webpack_require__(34),
+        diff: __webpack_require__(35),
+        major: __webpack_require__(36),
+        minor: __webpack_require__(37),
+        patch: __webpack_require__(38),
+        prerelease: __webpack_require__(39),
         compare: __webpack_require__(1),
-        rcompare: __webpack_require__(45),
-        compareLoose: __webpack_require__(46),
-        compareBuild: __webpack_require__(15),
-        sort: __webpack_require__(47),
-        rsort: __webpack_require__(48),
-        gt: __webpack_require__(8),
-        lt: __webpack_require__(16),
-        eq: __webpack_require__(14),
-        neq: __webpack_require__(20),
-        gte: __webpack_require__(17),
-        lte: __webpack_require__(18),
-        cmp: __webpack_require__(21),
-        coerce: __webpack_require__(49),
-        Comparator: __webpack_require__(9),
+        rcompare: __webpack_require__(40),
+        compareLoose: __webpack_require__(41),
+        compareBuild: __webpack_require__(12),
+        sort: __webpack_require__(42),
+        rsort: __webpack_require__(43),
+        gt: __webpack_require__(7),
+        lt: __webpack_require__(13),
+        eq: __webpack_require__(11),
+        neq: __webpack_require__(17),
+        gte: __webpack_require__(14),
+        lte: __webpack_require__(15),
+        cmp: __webpack_require__(18),
+        coerce: __webpack_require__(44),
+        Comparator: __webpack_require__(8),
         Range: __webpack_require__(2),
-        satisfies: __webpack_require__(10),
-        toComparators: __webpack_require__(50),
-        maxSatisfying: __webpack_require__(51),
-        minSatisfying: __webpack_require__(52),
-        minVersion: __webpack_require__(53),
-        validRange: __webpack_require__(54),
-        outside: __webpack_require__(19),
-        gtr: __webpack_require__(55),
-        ltr: __webpack_require__(56),
-        intersects: __webpack_require__(57),
-        simplifyRange: __webpack_require__(58),
-        subset: __webpack_require__(59)
+        satisfies: __webpack_require__(9),
+        toComparators: __webpack_require__(45),
+        maxSatisfying: __webpack_require__(46),
+        minSatisfying: __webpack_require__(47),
+        minVersion: __webpack_require__(48),
+        validRange: __webpack_require__(49),
+        outside: __webpack_require__(16),
+        gtr: __webpack_require__(50),
+        ltr: __webpack_require__(51),
+        intersects: __webpack_require__(52),
+        simplifyRange: __webpack_require__(53),
+        subset: __webpack_require__(54)
     };
 }, function(module, exports, __webpack_require__) {
     const parse = __webpack_require__(4);
@@ -5073,7 +5074,7 @@
         }
     };
 }, function(module, exports, __webpack_require__) {
-    const parse = __webpack_require__(4), eq = __webpack_require__(14);
+    const parse = __webpack_require__(4), eq = __webpack_require__(11);
     module.exports = (version1, version2) => {
         if (eq(version1, version2)) return null;
         {
@@ -5104,10 +5105,10 @@
     const compare = __webpack_require__(1);
     module.exports = (a, b) => compare(a, b, !0);
 }, function(module, exports, __webpack_require__) {
-    const compareBuild = __webpack_require__(15);
+    const compareBuild = __webpack_require__(12);
     module.exports = (list, loose) => list.sort((a, b) => compareBuild(a, b, loose));
 }, function(module, exports, __webpack_require__) {
-    const compareBuild = __webpack_require__(15);
+    const compareBuild = __webpack_require__(12);
     module.exports = (list, loose) => list.sort((a, b) => compareBuild(b, a, loose));
 }, function(module, exports, __webpack_require__) {
     const SemVer = __webpack_require__(0), parse = __webpack_require__(4), _require = __webpack_require__(3), re = _require.re, t = _require.t;
@@ -5153,7 +5154,7 @@
         }), min;
     };
 }, function(module, exports, __webpack_require__) {
-    const SemVer = __webpack_require__(0), Range = __webpack_require__(2), gt = __webpack_require__(8);
+    const SemVer = __webpack_require__(0), Range = __webpack_require__(2), gt = __webpack_require__(7);
     module.exports = (range, loose) => {
         range = new Range(range, loose);
         let minver = new SemVer("0.0.0");
@@ -5194,10 +5195,10 @@
         }
     };
 }, function(module, exports, __webpack_require__) {
-    const outside = __webpack_require__(19);
+    const outside = __webpack_require__(16);
     module.exports = (version, range, options) => outside(version, range, ">", options);
 }, function(module, exports, __webpack_require__) {
-    const outside = __webpack_require__(19);
+    const outside = __webpack_require__(16);
     module.exports = (version, range, options) => outside(version, range, "<", options);
 }, function(module, exports, __webpack_require__) {
     const Range = __webpack_require__(2);
@@ -5239,7 +5240,7 @@
         for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
         return arr2;
     }
-    const satisfies = __webpack_require__(10), compare = __webpack_require__(1);
+    const satisfies = __webpack_require__(9), compare = __webpack_require__(1);
     module.exports = (versions, range, options) => {
         const set = [];
         let min = null, prev = null;
@@ -5367,7 +5368,7 @@
         for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
         return arr2;
     }
-    const Range = __webpack_require__(2), ANY = __webpack_require__(9).ANY, satisfies = __webpack_require__(10), compare = __webpack_require__(1), simpleSubset = (sub, dom, options) => {
+    const Range = __webpack_require__(2), ANY = __webpack_require__(8).ANY, satisfies = __webpack_require__(9), compare = __webpack_require__(1), simpleSubset = (sub, dom, options) => {
         if (1 === sub.length && sub[0].semver === ANY) return 1 === dom.length && dom[0].semver === ANY;
         const eqSet = new Set;
         let gt, lt;
