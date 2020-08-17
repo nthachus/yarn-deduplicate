@@ -25,6 +25,7 @@
     "node": ">=6"
   },
   "jest": {
+    "cacheDirectory": "node_modules/.cache/jest",
     "testPathIgnorePatterns": [
       "<rootDir>/node_modules"
     ]

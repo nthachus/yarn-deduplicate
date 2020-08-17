@@ -1,2 +1,607 @@
 #!/usr/bin/env node
-!function(t){var e={};function s(i){if(e[i])return e[i].exports;var n=e[i]={i:i,l:!1,exports:{}};return t[i].call(n.exports,n,n.exports,s),n.l=!0,n.exports}s.m=t,s.c=e,s.d=function(t,e,i){s.o(t,e)||Object.defineProperty(t,e,{enumerable:!0,get:i})},s.r=function(t){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(t,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(t,"__esModule",{value:!0})},s.t=function(t,e){if(1&e&&(t=s(t)),8&e)return t;if(4&e&&"object"==typeof t&&t&&t.__esModule)return t;var i=Object.create(null);if(s.r(i),Object.defineProperty(i,"default",{enumerable:!0,value:t}),2&e&&"string"!=typeof t)for(var n in t)s.d(i,n,function(e){return t[e]}.bind(null,n));return i},s.n=function(t){var e=t&&t.__esModule?function(){return t.default}:function(){return t};return s.d(e,"a",e),e},s.o=function(t,e){return Object.prototype.hasOwnProperty.call(t,e)},s.p="",s(s.s=22)}([,,,,,function(t,e){t.exports=require("fs")},,,,,,function(t,e){t.exports=require("events")},function(t,e){t.exports=require("path")},,,,,,,,,,function(t,e,s){const i=s(23),n=s(5),o=s(25),a=o.fixDuplicates,r=o.listDuplicates,l=s(26).version;i.version(l).usage("[options] [yarn.lock path (default: yarn.lock)]").option("-s, --strategy <strategy>",'deduplication strategy. Valid values: fewer, highest. Default is "highest"',"highest").option("-l, --list","do not change yarn.lock, just output the diagnosis").option("-f, --fail","if there are duplicates in yarn.lock, terminate the script with exit status 1").option("--scopes <scopes>","a comma separated list of scopes to deduplicate. Defaults to all packages.",t=>t.split(",").map(t=>t.trim())).option("--packages <packages>","a comma separated list of packages to deduplicate. Defaults to all packages.",t=>t.split(",").map(t=>t.trim())).option("--exclude <exclude>","a comma separated list of packages not to deduplicate.",t=>t.split(",").map(t=>t.trim())).option("--print","instead of saving the deduplicated yarn.lock, print the result in stdout"),i.parse(process.argv),i.scopes&&i.packages&&(console.error("Please specify either scopes or packages, not both."),i.help()),"highest"!==i.strategy&&"fewer"!==i.strategy&&(console.error("Invalid strategy "+i.strategy),i.help());const h=i.args.length?i.args[0]:"yarn.lock";try{const t=n.readFileSync(h,"utf8"),e="fewer"===i.strategy;if(i.list){const s=r(t,{useMostCommon:e,includeScopes:i.scopes,includePackages:i.packages,excludePackages:i.exclude});s.forEach(t=>console.log(t)),i.fail&&s.length&&process.exit(1)}else{let s=a(t,{useMostCommon:e,includeScopes:i.scopes,includePackages:i.packages,excludePackages:i.exclude});if(i.print)console.log(s);else{const e=t.match(/(\r?\n)/);e&&"\r\n"===e[0]&&(s=s.replace(/\n/g,"\r\n")),n.writeFileSync(h,s)}i.fail&&t!==s&&process.exit(1)}process.exit(0)}catch(t){console.error(t),process.exit(1)}},function(t,e,s){const i=s(11).EventEmitter,n=s(24).spawn,o=s(12),a=s(5);class r{constructor(t,e){this.flags=t,this.required=t.indexOf("<")>=0,this.optional=t.indexOf("[")>=0,this.mandatory=!1,this.negate=-1!==t.indexOf("-no-");const s=t.split(/[ ,|]+/);s.length>1&&!/^[[<]/.test(s[1])&&(this.short=s.shift()),this.long=s.shift(),this.description=e||"",this.defaultValue=void 0}name(){return this.long.replace(/^--/,"")}attributeName(){return this.name().replace(/^no-/,"").split("-").reduce((t,e)=>t+e[0].toUpperCase()+e.slice(1))}is(t){return this.short===t||this.long===t}}class l extends Error{constructor(t,e,s){super(s),Error.captureStackTrace(this,this.constructor),this.name=this.constructor.name,this.code=e,this.exitCode=t,this.nestedError=void 0}}class h extends i{constructor(t){super(),this.commands=[],this.options=[],this.parent=null,this._allowUnknownOption=!1,this._args=[],this.rawArgs=null,this._scriptPath=null,this._name=t||"",this._optionValues={},this._storeOptionsAsProperties=!0,this._passCommandToAction=!0,this._actionResults=[],this._actionHandler=null,this._executableHandler=!1,this._executableFile=null,this._defaultCommandName=null,this._exitCallback=null,this._aliases=[],this._hidden=!1,this._helpFlags="-h, --help",this._helpDescription="display help for command",this._helpShortFlag="-h",this._helpLongFlag="--help",this._hasImplicitHelpCommand=void 0,this._helpCommandName="help",this._helpCommandnameAndArgs="help [command]",this._helpCommandDescription="display help for command"}command(t,e,s){let i=e,n=s;"object"==typeof i&&null!==i&&(n=i,i=null),n=n||{};const o=t.split(/ +/),a=this.createCommand(o.shift());return i&&(a.description(i),a._executableHandler=!0),n.isDefault&&(this._defaultCommandName=a._name),a._hidden=!(!n.noHelp&&!n.hidden),a._helpFlags=this._helpFlags,a._helpDescription=this._helpDescription,a._helpShortFlag=this._helpShortFlag,a._helpLongFlag=this._helpLongFlag,a._helpCommandName=this._helpCommandName,a._helpCommandnameAndArgs=this._helpCommandnameAndArgs,a._helpCommandDescription=this._helpCommandDescription,a._exitCallback=this._exitCallback,a._storeOptionsAsProperties=this._storeOptionsAsProperties,a._passCommandToAction=this._passCommandToAction,a._executableFile=n.executableFile||null,this.commands.push(a),a._parseExpectedArgs(o),a.parent=this,i?this:a}createCommand(t){return new h(t)}addCommand(t,e){if(!t._name)throw new Error("Command passed to .addCommand() must have a name");return function t(e){e.forEach(e=>{if(e._executableHandler&&!e._executableFile)throw new Error("Must specify executableFile for deeply nested executable: "+e.name());t(e.commands)})}(t.commands),(e=e||{}).isDefault&&(this._defaultCommandName=t._name),(e.noHelp||e.hidden)&&(t._hidden=!0),this.commands.push(t),t.parent=this,this}arguments(t){return this._parseExpectedArgs(t.split(/ +/))}addHelpCommand(t,e){return!1===t?this._hasImplicitHelpCommand=!1:(this._hasImplicitHelpCommand=!0,"string"==typeof t&&(this._helpCommandName=t.split(" ")[0],this._helpCommandnameAndArgs=t),this._helpCommandDescription=e||this._helpCommandDescription),this}_lazyHasImplicitHelpCommand(){return void 0===this._hasImplicitHelpCommand&&(this._hasImplicitHelpCommand=this.commands.length&&!this._actionHandler&&!this._findCommand("help")),this._hasImplicitHelpCommand}_parseExpectedArgs(t){if(t.length)return t.forEach(t=>{const e={required:!1,name:"",variadic:!1};switch(t[0]){case"<":e.required=!0,e.name=t.slice(1,-1);break;case"[":e.name=t.slice(1,-1)}e.name.length>3&&"..."===e.name.slice(-3)&&(e.variadic=!0,e.name=e.name.slice(0,-3)),e.name&&this._args.push(e)}),this._args.forEach((t,e)=>{if(t.variadic&&e<this._args.length-1)throw new Error(`only the last argument can be variadic '${t.name}'`)}),this}exitOverride(t){return this._exitCallback=t||(t=>{if("commander.executeSubCommandAsync"!==t.code)throw t}),this}_exit(t,e,s){this._exitCallback&&this._exitCallback(new l(t,e,s)),process.exit(t)}action(t){return this._actionHandler=e=>{const s=this._args.length,i=e.slice(0,s);this._passCommandToAction?i[s]=this:i[s]=this.opts(),e.length>s&&i.push(e.slice(s));const n=t.apply(this,i);let o=this;for(;o.parent;)o=o.parent;o._actionResults.push(n)},this}_optionEx(t,e,s,i,n){const o=new r(e,s),a=o.name(),l=o.attributeName();if(o.mandatory=!!t.mandatory,"function"!=typeof i)if(i instanceof RegExp){const t=i;i=(e,s)=>{const i=t.exec(e);return i?i[0]:s}}else n=i,i=null;if(o.negate||o.optional||o.required||"boolean"==typeof n){if(o.negate){const t=o.long.replace(/^--no-/,"--");n=!this._findOption(t)||this._getOptionValue(l)}void 0!==n&&(this._setOptionValue(l,n),o.defaultValue=n)}return this.options.push(o),this.on("option:"+a,t=>{null!==t&&i&&(t=i(t,void 0===this._getOptionValue(l)?n:this._getOptionValue(l))),"boolean"==typeof this._getOptionValue(l)||void 0===this._getOptionValue(l)?null==t?this._setOptionValue(l,!o.negate&&(n||!0)):this._setOptionValue(l,t):null!==t&&this._setOptionValue(l,!o.negate&&t)}),this}option(t,e,s,i){return this._optionEx({},t,e,s,i)}requiredOption(t,e,s,i){return this._optionEx({mandatory:!0},t,e,s,i)}allowUnknownOption(t){return this._allowUnknownOption=void 0===t||t,this}storeOptionsAsProperties(t){if(this._storeOptionsAsProperties=void 0===t||t,this.options.length)throw new Error("call .storeOptionsAsProperties() before adding options");return this}passCommandToAction(t){return this._passCommandToAction=void 0===t||t,this}_setOptionValue(t,e){this._storeOptionsAsProperties?this[t]=e:this._optionValues[t]=e}_getOptionValue(t){return this._storeOptionsAsProperties?this[t]:this._optionValues[t]}parse(t,e){if(void 0!==t&&!Array.isArray(t))throw new Error("first parameter to parse must be array or undefined");let s;switch(e=e||{},void 0===t&&(t=process.argv,process.versions&&process.versions.electron&&(e.from="electron")),this.rawArgs=t.slice(),e.from){case void 0:case"node":this._scriptPath=t[1],s=t.slice(2);break;case"electron":process.defaultApp?(this._scriptPath=t[1],s=t.slice(2)):s=t.slice(1);break;case"user":s=t.slice(0);break;default:throw new Error(`unexpected parse option { from: '${e.from}' }`)}return!this._scriptPath&&process.mainModule&&(this._scriptPath=process.mainModule.filename),this._name=this._name||this._scriptPath&&o.basename(this._scriptPath,o.extname(this._scriptPath)),this._parseCommand([],s),this}parseAsync(t,e){return this.parse(t,e),Promise.all(this._actionResults).then(()=>this)}_executeSubCommand(t,e){e=e.slice();let s=!1;const i=[".js",".ts",".mjs"];this._checkForMissingMandatoryOptions();const r=this._scriptPath;let h;try{const t=a.realpathSync(r);h=o.dirname(t)}catch(t){h="."}let p=o.basename(r,o.extname(r))+"-"+t._name;t._executableFile&&(p=t._executableFile);const c=o.join(h,p);let m;a.existsSync(c)?p=c:i.forEach(t=>{a.existsSync(`${c}${t}`)&&(p=`${c}${t}`)}),s=i.includes(o.extname(p)),"win32"!==process.platform?s?(e.unshift(p),e=g(process.execArgv).concat(e),m=n(process.argv[0],e,{stdio:"inherit"})):m=n(p,e,{stdio:"inherit"}):(e.unshift(p),e=g(process.execArgv).concat(e),m=n(process.execPath,e,{stdio:"inherit"}));["SIGUSR1","SIGUSR2","SIGTERM","SIGINT","SIGHUP"].forEach(t=>{process.on(t,()=>{!1===m.killed&&null===m.exitCode&&m.kill(t)})});const d=this._exitCallback;d?m.on("close",()=>{d(new l(process.exitCode||0,"commander.executeSubCommandAsync","(close)"))}):m.on("close",process.exit.bind(process)),m.on("error",e=>{if("ENOENT"===e.code){const e=`'${p}' does not exist\n - if '${t._name}' is not meant to be an executable command, remove description parameter from '.command()' and use '.description()' instead\n - if the default executable name is not suitable, use the executableFile option to supply a custom name`;throw new Error(e)}if("EACCES"===e.code)throw new Error(`'${p}' not executable`);if(d){const t=new l(1,"commander.executeSubCommandAsync","(error)");t.nestedError=e,d(t)}else process.exit(1)}),this.runningCommand=m}_dispatchSubcommand(t,e,s){const i=this._findCommand(t);i||this._helpAndError(),i._executableHandler?this._executeSubCommand(i,e.concat(s)):i._parseCommand(e,s)}_parseCommand(t,e){const s=this.parseOptions(e);if(t=t.concat(s.operands),e=s.unknown,this.args=t.concat(e),t&&this._findCommand(t[0]))this._dispatchSubcommand(t[0],t.slice(1),e);else if(this._lazyHasImplicitHelpCommand()&&t[0]===this._helpCommandName)1===t.length?this.help():this._dispatchSubcommand(t[1],[],[this._helpLongFlag]);else if(this._defaultCommandName)d(this,e),this._dispatchSubcommand(this._defaultCommandName,t,e);else if(!this.commands.length||0!==this.args.length||this._actionHandler||this._defaultCommandName||this._helpAndError(),d(this,s.unknown),this._checkForMissingMandatoryOptions(),s.unknown.length>0&&this.unknownOption(s.unknown[0]),this._actionHandler){const s=this.args.slice();this._args.forEach((t,e)=>{t.required&&null==s[e]?this.missingArgument(t.name):t.variadic&&(s[e]=s.splice(e))}),this._actionHandler(s),this.emit("command:"+this.name(),t,e)}else t.length?this._findCommand("*")?this._dispatchSubcommand("*",t,e):this.listenerCount("command:*")?this.emit("command:*",t,e):this.commands.length&&this.unknownCommand():this.commands.length&&this._helpAndError()}_findCommand(t){if(t)return this.commands.find(e=>e._name===t||e._aliases.includes(t))}_findOption(t){return this.options.find(e=>e.is(t))}_checkForMissingMandatoryOptions(){for(let t=this;t;t=t.parent)t.options.forEach(e=>{e.mandatory&&void 0===t._getOptionValue(e.attributeName())&&t.missingMandatoryOptionValue(e)})}parseOptions(t){const e=[],s=[];let i=e;const n=t.slice();function o(t){return t.length>1&&"-"===t[0]}for(;n.length;){const t=n.shift();if("--"===t){i===s&&i.push(t),i.push(...n);break}if(o(t)){const e=this._findOption(t);if(e){if(e.required){const t=n.shift();void 0===t&&this.optionMissingArgument(e),this.emit("option:"+e.name(),t)}else if(e.optional){let t=null;n.length>0&&!o(n[0])&&(t=n.shift()),this.emit("option:"+e.name(),t)}else this.emit("option:"+e.name());continue}}if(t.length>2&&"-"===t[0]&&"-"!==t[1]){const e=this._findOption("-"+t[1]);if(e){e.required||e.optional?this.emit("option:"+e.name(),t.slice(2)):(this.emit("option:"+e.name()),n.unshift("-"+t.slice(2)));continue}}if(/^--[^=]+=/.test(t)){const e=t.indexOf("="),s=this._findOption(t.slice(0,e));if(s&&(s.required||s.optional)){this.emit("option:"+s.name(),t.slice(e+1));continue}}t.length>1&&"-"===t[0]&&(i=s),i.push(t)}return{operands:e,unknown:s}}opts(){if(this._storeOptionsAsProperties){const t={},e=this.options.length;for(let s=0;s<e;s++){const e=this.options[s].attributeName();t[e]=e===this._versionOptionName?this._version:this[e]}return t}return this._optionValues}missingArgument(t){const e=`error: missing required argument '${t}'`;console.error(e),this._exit(1,"commander.missingArgument",e)}optionMissingArgument(t,e){let s;s=e?`error: option '${t.flags}' argument missing, got '${e}'`:`error: option '${t.flags}' argument missing`,console.error(s),this._exit(1,"commander.optionMissingArgument",s)}missingMandatoryOptionValue(t){const e=`error: required option '${t.flags}' not specified`;console.error(e),this._exit(1,"commander.missingMandatoryOptionValue",e)}unknownOption(t){if(this._allowUnknownOption)return;const e=`error: unknown option '${t}'`;console.error(e),this._exit(1,"commander.unknownOption",e)}unknownCommand(){const t=[this.name()];for(let e=this.parent;e;e=e.parent)t.unshift(e.name());const e=t.join(" "),s=`error: unknown command '${this.args[0]}'. See '${e} ${this._helpLongFlag}'.`;console.error(s),this._exit(1,"commander.unknownCommand",s)}version(t,e,s){if(void 0===t)return this._version;this._version=t;const i=new r(e=e||"-V, --version",s=s||"output the version number");return this._versionOptionName=i.long.substr(2)||"version",this.options.push(i),this.on("option:"+this._versionOptionName,()=>{process.stdout.write(t+"\n"),this._exit(0,"commander.version",t)}),this}description(t,e){return void 0===t&&void 0===e?this._description:(this._description=t,this._argsDescription=e,this)}alias(t){if(void 0===t)return this._aliases[0];let e=this;if(0!==this.commands.length&&this.commands[this.commands.length-1]._executableHandler&&(e=this.commands[this.commands.length-1]),t===e._name)throw new Error("Command alias can't be the same as its name");return e._aliases.push(t),this}aliases(t){return void 0===t?this._aliases:(t.forEach(t=>this.alias(t)),this)}usage(t){if(void 0===t){if(this._usage)return this._usage;const t=this._args.map(t=>u(t));return"[options]"+(this.commands.length?" [command]":"")+(this._args.length?" "+t.join(" "):"")}return this._usage=t,this}name(t){return void 0===t?this._name:(this._name=t,this)}prepareCommands(){const t=this.commands.filter(t=>!t._hidden).map(t=>{const e=t._args.map(t=>u(t)).join(" ");return[t._name+(t._aliases[0]?"|"+t._aliases[0]:"")+(t.options.length?" [options]":"")+(e?" "+e:""),t._description]});return this._lazyHasImplicitHelpCommand()&&t.push([this._helpCommandnameAndArgs,this._helpCommandDescription]),t}largestCommandLength(){return this.prepareCommands().reduce((t,e)=>Math.max(t,e[0].length),0)}largestOptionLength(){const t=[].slice.call(this.options);return t.push({flags:this._helpFlags}),t.reduce((t,e)=>Math.max(t,e.flags.length),0)}largestArgLength(){return this._args.reduce((t,e)=>Math.max(t,e.name.length),0)}padWidth(){let t=this.largestOptionLength();return this._argsDescription&&this._args.length&&this.largestArgLength()>t&&(t=this.largestArgLength()),this.commands&&this.commands.length&&this.largestCommandLength()>t&&(t=this.largestCommandLength()),t}optionHelp(){const t=this.padWidth(),e=(process.stdout.columns||80)-t-4;function s(s,i){return p(s,t)+"  "+m(i,e,t+2)}const i=this.options.map(t=>{const e=t.description+(t.negate||void 0===t.defaultValue?"":" (default: "+JSON.stringify(t.defaultValue)+")");return s(t.flags,e)}),n=this._helpShortFlag&&!this._findOption(this._helpShortFlag),o=!this._findOption(this._helpLongFlag);if(n||o){let t=this._helpFlags;n?o||(t=this._helpShortFlag):t=this._helpLongFlag,i.push(s(t,this._helpDescription))}return i.join("\n")}commandHelp(){if(!this.commands.length&&!this._lazyHasImplicitHelpCommand())return"";const t=this.prepareCommands(),e=this.padWidth(),s=(process.stdout.columns||80)-e-4;return["Commands:",t.map(t=>{const i=t[1]?"  "+t[1]:"";return(i?p(t[0],e):t[0])+m(i,s,e+2)}).join("\n").replace(/^/gm,"  "),""].join("\n")}helpInformation(){let t=[];if(this._description){t=[this._description,""];const e=this._argsDescription;if(e&&this._args.length){const s=this.padWidth(),i=(process.stdout.columns||80)-s-5;t.push("Arguments:"),t.push(""),this._args.forEach(n=>{t.push("  "+p(n.name,s)+"  "+c(e[n.name],i,s+4))}),t.push("")}}let e=this._name;this._aliases[0]&&(e=e+"|"+this._aliases[0]);let s="";for(let t=this.parent;t;t=t.parent)s=t.name()+" "+s;const i=["Usage: "+s+e+" "+this.usage(),""];let n=[];const o=this.commandHelp();o&&(n=[o]);const a=["Options:",""+this.optionHelp().replace(/^/gm,"  "),""];return i.concat(t).concat(a).concat(n).join("\n")}outputHelp(t){t||(t=t=>t);const e=t(this.helpInformation());if("string"!=typeof e&&!Buffer.isBuffer(e))throw new Error("outputHelp callback must return a string or a Buffer");process.stdout.write(e),this.emit(this._helpLongFlag)}helpOption(t,e){this._helpFlags=t||this._helpFlags,this._helpDescription=e||this._helpDescription;const s=this._helpFlags.split(/[ ,|]+/);return this._helpShortFlag=void 0,s.length>1&&(this._helpShortFlag=s.shift()),this._helpLongFlag=s.shift(),this}help(t){this.outputHelp(t),this._exit(process.exitCode||0,"commander.help","(outputHelp)")}_helpAndError(){this.outputHelp(),this._exit(1,"commander.help","(outputHelp)")}}function p(t,e){const s=Math.max(0,e-t.length);return t+Array(s+1).join(" ")}function c(t,e,s){const i=new RegExp(".{1,"+(e-1)+"}([\\s​]|$)|[^\\s​]+?([\\s​]|$)","g");return(t.match(i)||[]).map((t,e)=>("\n"===t.slice(-1)&&(t=t.slice(0,t.length-1)),(e>0&&s?Array(s+1).join(" "):"")+t.trimRight())).join("\n")}function m(t,e,s){if(t.match(/[\n]\s+/))return t;return e<40?t:c(t,e,s)}function d(t,e){e.find(e=>e===t._helpLongFlag||e===t._helpShortFlag)&&(t.outputHelp(),t._exit(0,"commander.helpDisplayed","(outputHelp)"))}function u(t){const e=t.name+(!0===t.variadic?"...":"");return t.required?"<"+e+">":"["+e+"]"}function g(t){return t.map(t=>{let e=t;if(0===t.indexOf("--inspect")){let s,i,n="127.0.0.1",o="9229";null!==(i=t.match(/^(--inspect(-brk)?)$/))?s=i[1]:null!==(i=t.match(/^(--inspect(-brk|-port)?)=([^:]+)$/))?(s=i[1],/^\d+$/.test(i[3])?o=i[3]:n=i[3]):null!==(i=t.match(/^(--inspect(-brk|-port)?)=([^:]+):(\d+)$/))&&(s=i[1],n=i[3],o=i[4]),s&&"0"!==o&&(e=`${s}=${n}:${parseInt(o)+1}`)}return e})}(e=t.exports=new h).program=e,e.Command=h,e.Option=r,e.CommanderError=l},function(t,e){t.exports=require("child_process")},function(t,e){t.exports=require("./index")},function(t){t.exports=JSON.parse('{"name":"yarn-deduplicate","version":"2.1.1","bin":"./cli.js","description":"Deduplication tool for yarn.lock files","keywords":["yarn","yarn.lock","lockfile","duplicated","package manager","dedupe","deduplicate"],"scripts":{"test":"jest","lint":"eslint .","build":"rimraf dist && webpack --progress"},"homepage":"https://github.com/atlassian/yarn-deduplicate#readme","bugs":"https://github.com/atlassian/yarn-deduplicate/issues","license":"Apache-2.0","author":"Sergio Cinos <sergio.cinos@gmail.com>","main":"index.js","repository":{"type":"git","url":"git@github.com:atlassian/yarn-deduplicate.git"},"engines":{"node":">=10","yarn":">=1"},"dependencies":{"@yarnpkg/lockfile":"^1.1.0","commander":"^5.1.0","semver":"^7.3.2"},"devDependencies":{"@babel/core":"^7.8.3","@babel/preset-env":"^7.8.3","babel-loader":"^8.0.6","copy-pkg-json-webpack-plugin":"^0.0.39","copy-webpack-plugin":"^5.1.0","eslint":"^7.4.0","eslint-config-prettier":"^6.11.0","eslint-plugin-jest":"^23.18.0","eslint-plugin-prettier":"^3.1.4","jest":"^26.1.0","outdent":"^0.7.1","prettier":"^2.0.5","string-replace-loader":"^2.2.0","webpack":"^4.43.0","webpack-cli":"^3.3.12"},"jest":{"testPathIgnorePatterns":["<rootDir>/node_modules"]},"eslintConfig":{"extends":["plugin:prettier/recommended","plugin:jest/recommended"],"parserOptions":{"ecmaVersion":2017},"env":{"es6":true,"node":true}},"prettier":{"printWidth":100,"singleQuote":true,"trailingComma":"es5"}}')}]);
+!function(modules) {
+    var installedModules = {};
+    function __webpack_require__(moduleId) {
+        if (installedModules[moduleId]) return installedModules[moduleId].exports;
+        var module = installedModules[moduleId] = {
+            i: moduleId,
+            l: !1,
+            exports: {}
+        };
+        return modules[moduleId].call(module.exports, module, module.exports, __webpack_require__), 
+        module.l = !0, module.exports;
+    }
+    __webpack_require__.m = modules, __webpack_require__.c = installedModules, __webpack_require__.d = function(exports, name, getter) {
+        __webpack_require__.o(exports, name) || Object.defineProperty(exports, name, {
+            enumerable: !0,
+            get: getter
+        });
+    }, __webpack_require__.r = function(exports) {
+        "undefined" != typeof Symbol && Symbol.toStringTag && Object.defineProperty(exports, Symbol.toStringTag, {
+            value: "Module"
+        }), Object.defineProperty(exports, "__esModule", {
+            value: !0
+        });
+    }, __webpack_require__.t = function(value, mode) {
+        if (1 & mode && (value = __webpack_require__(value)), 8 & mode) return value;
+        if (4 & mode && "object" == typeof value && value && value.__esModule) return value;
+        var ns = Object.create(null);
+        if (__webpack_require__.r(ns), Object.defineProperty(ns, "default", {
+            enumerable: !0,
+            value: value
+        }), 2 & mode && "string" != typeof value) for (var key in value) __webpack_require__.d(ns, key, function(key) {
+            return value[key];
+        }.bind(null, key));
+        return ns;
+    }, __webpack_require__.n = function(module) {
+        var getter = module && module.__esModule ? function() {
+            return module.default;
+        } : function() {
+            return module;
+        };
+        return __webpack_require__.d(getter, "a", getter), getter;
+    }, __webpack_require__.o = function(object, property) {
+        return Object.prototype.hasOwnProperty.call(object, property);
+    }, __webpack_require__.p = "", __webpack_require__(__webpack_require__.s = 22);
+}([ , , , , , function(module, exports) {
+    module.exports = require("fs");
+}, , , , , , function(module, exports) {
+    module.exports = require("events");
+}, function(module, exports) {
+    module.exports = require("path");
+}, , , , , , , , , , function(module, exports, __webpack_require__) {
+    const commander = __webpack_require__(23), fs = __webpack_require__(5), _require = __webpack_require__(25), fixDuplicates = _require.fixDuplicates, listDuplicates = _require.listDuplicates, version = __webpack_require__(26).version;
+    commander.version(version).usage("[options] [yarn.lock path (default: yarn.lock)]").option("-s, --strategy <strategy>", 'deduplication strategy. Valid values: fewer, highest. Default is "highest"', "highest").option("-l, --list", "do not change yarn.lock, just output the diagnosis").option("-f, --fail", "if there are duplicates in yarn.lock, terminate the script with exit status 1").option("--scopes <scopes>", "a comma separated list of scopes to deduplicate. Defaults to all packages.", val => val.split(",").map(v => v.trim())).option("--packages <packages>", "a comma separated list of packages to deduplicate. Defaults to all packages.", val => val.split(",").map(v => v.trim())).option("--exclude <exclude>", "a comma separated list of packages not to deduplicate.", val => val.split(",").map(v => v.trim())).option("--print", "instead of saving the deduplicated yarn.lock, print the result in stdout"), 
+    commander.parse(process.argv), commander.scopes && commander.packages && (console.error("Please specify either scopes or packages, not both."), 
+    commander.help()), "highest" !== commander.strategy && "fewer" !== commander.strategy && (console.error("Invalid strategy " + commander.strategy), 
+    commander.help());
+    const file = commander.args.length ? commander.args[0] : "yarn.lock";
+    try {
+        const yarnLock = fs.readFileSync(file, "utf8"), useMostCommon = "fewer" === commander.strategy;
+        if (commander.list) {
+            const duplicates = listDuplicates(yarnLock, {
+                useMostCommon: useMostCommon,
+                includeScopes: commander.scopes,
+                includePackages: commander.packages,
+                excludePackages: commander.exclude
+            });
+            duplicates.forEach(logLine => console.log(logLine)), commander.fail && duplicates.length && process.exit(1);
+        } else {
+            let dedupedYarnLock = fixDuplicates(yarnLock, {
+                useMostCommon: useMostCommon,
+                includeScopes: commander.scopes,
+                includePackages: commander.packages,
+                excludePackages: commander.exclude
+            });
+            if (commander.print) console.log(dedupedYarnLock); else {
+                const eolMatch = yarnLock.match(/(\r?\n)/);
+                eolMatch && "\r\n" === eolMatch[0] && (dedupedYarnLock = dedupedYarnLock.replace(/\n/g, "\r\n")), 
+                fs.writeFileSync(file, dedupedYarnLock);
+            }
+            commander.fail && yarnLock !== dedupedYarnLock && process.exit(1);
+        }
+        process.exit(0);
+    } catch (e) {
+        console.error(e), process.exit(1);
+    }
+}, function(module, exports, __webpack_require__) {
+    const EventEmitter = __webpack_require__(11).EventEmitter, spawn = __webpack_require__(24).spawn, path = __webpack_require__(12), fs = __webpack_require__(5);
+    class Option {
+        constructor(flags, description) {
+            this.flags = flags, this.required = flags.indexOf("<") >= 0, this.optional = flags.indexOf("[") >= 0, 
+            this.mandatory = !1, this.negate = -1 !== flags.indexOf("-no-");
+            const flagParts = flags.split(/[ ,|]+/);
+            flagParts.length > 1 && !/^[[<]/.test(flagParts[1]) && (this.short = flagParts.shift()), 
+            this.long = flagParts.shift(), this.description = description || "", this.defaultValue = void 0;
+        }
+        name() {
+            return this.long.replace(/^--/, "");
+        }
+        attributeName() {
+            return this.name().replace(/^no-/, "").split("-").reduce((str, word) => str + word[0].toUpperCase() + word.slice(1));
+        }
+        is(arg) {
+            return this.short === arg || this.long === arg;
+        }
+    }
+    class CommanderError extends Error {
+        constructor(exitCode, code, message) {
+            super(message), Error.captureStackTrace(this, this.constructor), this.name = this.constructor.name, 
+            this.code = code, this.exitCode = exitCode, this.nestedError = void 0;
+        }
+    }
+    class Command extends EventEmitter {
+        constructor(name) {
+            super(), this.commands = [], this.options = [], this.parent = null, this._allowUnknownOption = !1, 
+            this._args = [], this.rawArgs = null, this._scriptPath = null, this._name = name || "", 
+            this._optionValues = {}, this._storeOptionsAsProperties = !0, this._passCommandToAction = !0, 
+            this._actionResults = [], this._actionHandler = null, this._executableHandler = !1, 
+            this._executableFile = null, this._defaultCommandName = null, this._exitCallback = null, 
+            this._aliases = [], this._hidden = !1, this._helpFlags = "-h, --help", this._helpDescription = "display help for command", 
+            this._helpShortFlag = "-h", this._helpLongFlag = "--help", this._hasImplicitHelpCommand = void 0, 
+            this._helpCommandName = "help", this._helpCommandnameAndArgs = "help [command]", 
+            this._helpCommandDescription = "display help for command";
+        }
+        command(nameAndArgs, actionOptsOrExecDesc, execOpts) {
+            let desc = actionOptsOrExecDesc, opts = execOpts;
+            "object" == typeof desc && null !== desc && (opts = desc, desc = null), opts = opts || {};
+            const args = nameAndArgs.split(/ +/), cmd = this.createCommand(args.shift());
+            return desc && (cmd.description(desc), cmd._executableHandler = !0), opts.isDefault && (this._defaultCommandName = cmd._name), 
+            cmd._hidden = !(!opts.noHelp && !opts.hidden), cmd._helpFlags = this._helpFlags, 
+            cmd._helpDescription = this._helpDescription, cmd._helpShortFlag = this._helpShortFlag, 
+            cmd._helpLongFlag = this._helpLongFlag, cmd._helpCommandName = this._helpCommandName, 
+            cmd._helpCommandnameAndArgs = this._helpCommandnameAndArgs, cmd._helpCommandDescription = this._helpCommandDescription, 
+            cmd._exitCallback = this._exitCallback, cmd._storeOptionsAsProperties = this._storeOptionsAsProperties, 
+            cmd._passCommandToAction = this._passCommandToAction, cmd._executableFile = opts.executableFile || null, 
+            this.commands.push(cmd), cmd._parseExpectedArgs(args), cmd.parent = this, desc ? this : cmd;
+        }
+        createCommand(name) {
+            return new Command(name);
+        }
+        addCommand(cmd, opts) {
+            if (!cmd._name) throw new Error("Command passed to .addCommand() must have a name");
+            return function checkExplicitNames(commandArray) {
+                commandArray.forEach(cmd => {
+                    if (cmd._executableHandler && !cmd._executableFile) throw new Error("Must specify executableFile for deeply nested executable: " + cmd.name());
+                    checkExplicitNames(cmd.commands);
+                });
+            }(cmd.commands), (opts = opts || {}).isDefault && (this._defaultCommandName = cmd._name), 
+            (opts.noHelp || opts.hidden) && (cmd._hidden = !0), this.commands.push(cmd), cmd.parent = this, 
+            this;
+        }
+        arguments(desc) {
+            return this._parseExpectedArgs(desc.split(/ +/));
+        }
+        addHelpCommand(enableOrNameAndArgs, description) {
+            return !1 === enableOrNameAndArgs ? this._hasImplicitHelpCommand = !1 : (this._hasImplicitHelpCommand = !0, 
+            "string" == typeof enableOrNameAndArgs && (this._helpCommandName = enableOrNameAndArgs.split(" ")[0], 
+            this._helpCommandnameAndArgs = enableOrNameAndArgs), this._helpCommandDescription = description || this._helpCommandDescription), 
+            this;
+        }
+        _lazyHasImplicitHelpCommand() {
+            return void 0 === this._hasImplicitHelpCommand && (this._hasImplicitHelpCommand = this.commands.length && !this._actionHandler && !this._findCommand("help")), 
+            this._hasImplicitHelpCommand;
+        }
+        _parseExpectedArgs(args) {
+            if (args.length) return args.forEach(arg => {
+                const argDetails = {
+                    required: !1,
+                    name: "",
+                    variadic: !1
+                };
+                switch (arg[0]) {
+                  case "<":
+                    argDetails.required = !0, argDetails.name = arg.slice(1, -1);
+                    break;
+
+                  case "[":
+                    argDetails.name = arg.slice(1, -1);
+                }
+                argDetails.name.length > 3 && "..." === argDetails.name.slice(-3) && (argDetails.variadic = !0, 
+                argDetails.name = argDetails.name.slice(0, -3)), argDetails.name && this._args.push(argDetails);
+            }), this._args.forEach((arg, i) => {
+                if (arg.variadic && i < this._args.length - 1) throw new Error(`only the last argument can be variadic '${arg.name}'`);
+            }), this;
+        }
+        exitOverride(fn) {
+            return this._exitCallback = fn || (err => {
+                if ("commander.executeSubCommandAsync" !== err.code) throw err;
+            }), this;
+        }
+        _exit(exitCode, code, message) {
+            this._exitCallback && this._exitCallback(new CommanderError(exitCode, code, message)), 
+            process.exit(exitCode);
+        }
+        action(fn) {
+            return this._actionHandler = args => {
+                const expectedArgsCount = this._args.length, actionArgs = args.slice(0, expectedArgsCount);
+                this._passCommandToAction ? actionArgs[expectedArgsCount] = this : actionArgs[expectedArgsCount] = this.opts(), 
+                args.length > expectedArgsCount && actionArgs.push(args.slice(expectedArgsCount));
+                const actionResult = fn.apply(this, actionArgs);
+                let rootCommand = this;
+                for (;rootCommand.parent; ) rootCommand = rootCommand.parent;
+                rootCommand._actionResults.push(actionResult);
+            }, this;
+        }
+        _optionEx(config, flags, description, fn, defaultValue) {
+            const option = new Option(flags, description), oname = option.name(), name = option.attributeName();
+            if (option.mandatory = !!config.mandatory, "function" != typeof fn) if (fn instanceof RegExp) {
+                const regex = fn;
+                fn = (val, def) => {
+                    const m = regex.exec(val);
+                    return m ? m[0] : def;
+                };
+            } else defaultValue = fn, fn = null;
+            if (option.negate || option.optional || option.required || "boolean" == typeof defaultValue) {
+                if (option.negate) {
+                    const positiveLongFlag = option.long.replace(/^--no-/, "--");
+                    defaultValue = !this._findOption(positiveLongFlag) || this._getOptionValue(name);
+                }
+                void 0 !== defaultValue && (this._setOptionValue(name, defaultValue), option.defaultValue = defaultValue);
+            }
+            return this.options.push(option), this.on("option:" + oname, val => {
+                null !== val && fn && (val = fn(val, void 0 === this._getOptionValue(name) ? defaultValue : this._getOptionValue(name))), 
+                "boolean" == typeof this._getOptionValue(name) || void 0 === this._getOptionValue(name) ? null == val ? this._setOptionValue(name, !option.negate && (defaultValue || !0)) : this._setOptionValue(name, val) : null !== val && this._setOptionValue(name, !option.negate && val);
+            }), this;
+        }
+        option(flags, description, fn, defaultValue) {
+            return this._optionEx({}, flags, description, fn, defaultValue);
+        }
+        requiredOption(flags, description, fn, defaultValue) {
+            return this._optionEx({
+                mandatory: !0
+            }, flags, description, fn, defaultValue);
+        }
+        allowUnknownOption(arg) {
+            return this._allowUnknownOption = void 0 === arg || arg, this;
+        }
+        storeOptionsAsProperties(value) {
+            if (this._storeOptionsAsProperties = void 0 === value || value, this.options.length) throw new Error("call .storeOptionsAsProperties() before adding options");
+            return this;
+        }
+        passCommandToAction(value) {
+            return this._passCommandToAction = void 0 === value || value, this;
+        }
+        _setOptionValue(key, value) {
+            this._storeOptionsAsProperties ? this[key] = value : this._optionValues[key] = value;
+        }
+        _getOptionValue(key) {
+            return this._storeOptionsAsProperties ? this[key] : this._optionValues[key];
+        }
+        parse(argv, parseOptions) {
+            if (void 0 !== argv && !Array.isArray(argv)) throw new Error("first parameter to parse must be array or undefined");
+            let userArgs;
+            switch (parseOptions = parseOptions || {}, void 0 === argv && (argv = process.argv, 
+            process.versions && process.versions.electron && (parseOptions.from = "electron")), 
+            this.rawArgs = argv.slice(), parseOptions.from) {
+              case void 0:
+              case "node":
+                this._scriptPath = argv[1], userArgs = argv.slice(2);
+                break;
+
+              case "electron":
+                process.defaultApp ? (this._scriptPath = argv[1], userArgs = argv.slice(2)) : userArgs = argv.slice(1);
+                break;
+
+              case "user":
+                userArgs = argv.slice(0);
+                break;
+
+              default:
+                throw new Error(`unexpected parse option { from: '${parseOptions.from}' }`);
+            }
+            return !this._scriptPath && process.mainModule && (this._scriptPath = process.mainModule.filename), 
+            this._name = this._name || this._scriptPath && path.basename(this._scriptPath, path.extname(this._scriptPath)), 
+            this._parseCommand([], userArgs), this;
+        }
+        parseAsync(argv, parseOptions) {
+            return this.parse(argv, parseOptions), Promise.all(this._actionResults).then(() => this);
+        }
+        _executeSubCommand(subcommand, args) {
+            args = args.slice();
+            let launchWithNode = !1;
+            const sourceExt = [ ".js", ".ts", ".mjs" ];
+            this._checkForMissingMandatoryOptions();
+            const scriptPath = this._scriptPath;
+            let baseDir;
+            try {
+                const resolvedLink = fs.realpathSync(scriptPath);
+                baseDir = path.dirname(resolvedLink);
+            } catch (e) {
+                baseDir = ".";
+            }
+            let bin = path.basename(scriptPath, path.extname(scriptPath)) + "-" + subcommand._name;
+            subcommand._executableFile && (bin = subcommand._executableFile);
+            const localBin = path.join(baseDir, bin);
+            let proc;
+            fs.existsSync(localBin) ? bin = localBin : sourceExt.forEach(ext => {
+                fs.existsSync(`${localBin}${ext}`) && (bin = `${localBin}${ext}`);
+            }), launchWithNode = sourceExt.includes(path.extname(bin)), "win32" !== process.platform ? launchWithNode ? (args.unshift(bin), 
+            args = incrementNodeInspectorPort(process.execArgv).concat(args), proc = spawn(process.argv[0], args, {
+                stdio: "inherit"
+            })) : proc = spawn(bin, args, {
+                stdio: "inherit"
+            }) : (args.unshift(bin), args = incrementNodeInspectorPort(process.execArgv).concat(args), 
+            proc = spawn(process.execPath, args, {
+                stdio: "inherit"
+            }));
+            [ "SIGUSR1", "SIGUSR2", "SIGTERM", "SIGINT", "SIGHUP" ].forEach(signal => {
+                process.on(signal, () => {
+                    !1 === proc.killed && null === proc.exitCode && proc.kill(signal);
+                });
+            });
+            const exitCallback = this._exitCallback;
+            exitCallback ? proc.on("close", () => {
+                exitCallback(new CommanderError(process.exitCode || 0, "commander.executeSubCommandAsync", "(close)"));
+            }) : proc.on("close", process.exit.bind(process)), proc.on("error", err => {
+                if ("ENOENT" === err.code) {
+                    const executableMissing = `'${bin}' does not exist\n - if '${subcommand._name}' is not meant to be an executable command, remove description parameter from '.command()' and use '.description()' instead\n - if the default executable name is not suitable, use the executableFile option to supply a custom name`;
+                    throw new Error(executableMissing);
+                }
+                if ("EACCES" === err.code) throw new Error(`'${bin}' not executable`);
+                if (exitCallback) {
+                    const wrappedError = new CommanderError(1, "commander.executeSubCommandAsync", "(error)");
+                    wrappedError.nestedError = err, exitCallback(wrappedError);
+                } else process.exit(1);
+            }), this.runningCommand = proc;
+        }
+        _dispatchSubcommand(commandName, operands, unknown) {
+            const subCommand = this._findCommand(commandName);
+            subCommand || this._helpAndError(), subCommand._executableHandler ? this._executeSubCommand(subCommand, operands.concat(unknown)) : subCommand._parseCommand(operands, unknown);
+        }
+        _parseCommand(operands, unknown) {
+            const parsed = this.parseOptions(unknown);
+            if (operands = operands.concat(parsed.operands), unknown = parsed.unknown, this.args = operands.concat(unknown), 
+            operands && this._findCommand(operands[0])) this._dispatchSubcommand(operands[0], operands.slice(1), unknown); else if (this._lazyHasImplicitHelpCommand() && operands[0] === this._helpCommandName) 1 === operands.length ? this.help() : this._dispatchSubcommand(operands[1], [], [ this._helpLongFlag ]); else if (this._defaultCommandName) outputHelpIfRequested(this, unknown), 
+            this._dispatchSubcommand(this._defaultCommandName, operands, unknown); else if (!this.commands.length || 0 !== this.args.length || this._actionHandler || this._defaultCommandName || this._helpAndError(), 
+            outputHelpIfRequested(this, parsed.unknown), this._checkForMissingMandatoryOptions(), 
+            parsed.unknown.length > 0 && this.unknownOption(parsed.unknown[0]), this._actionHandler) {
+                const args = this.args.slice();
+                this._args.forEach((arg, i) => {
+                    arg.required && null == args[i] ? this.missingArgument(arg.name) : arg.variadic && (args[i] = args.splice(i));
+                }), this._actionHandler(args), this.emit("command:" + this.name(), operands, unknown);
+            } else operands.length ? this._findCommand("*") ? this._dispatchSubcommand("*", operands, unknown) : this.listenerCount("command:*") ? this.emit("command:*", operands, unknown) : this.commands.length && this.unknownCommand() : this.commands.length && this._helpAndError();
+        }
+        _findCommand(name) {
+            if (name) return this.commands.find(cmd => cmd._name === name || cmd._aliases.includes(name));
+        }
+        _findOption(arg) {
+            return this.options.find(option => option.is(arg));
+        }
+        _checkForMissingMandatoryOptions() {
+            for (let cmd = this; cmd; cmd = cmd.parent) cmd.options.forEach(anOption => {
+                anOption.mandatory && void 0 === cmd._getOptionValue(anOption.attributeName()) && cmd.missingMandatoryOptionValue(anOption);
+            });
+        }
+        parseOptions(argv) {
+            const operands = [], unknown = [];
+            let dest = operands;
+            const args = argv.slice();
+            function maybeOption(arg) {
+                return arg.length > 1 && "-" === arg[0];
+            }
+            for (;args.length; ) {
+                const arg = args.shift();
+                if ("--" === arg) {
+                    dest === unknown && dest.push(arg), dest.push(...args);
+                    break;
+                }
+                if (maybeOption(arg)) {
+                    const option = this._findOption(arg);
+                    if (option) {
+                        if (option.required) {
+                            const value = args.shift();
+                            void 0 === value && this.optionMissingArgument(option), this.emit("option:" + option.name(), value);
+                        } else if (option.optional) {
+                            let value = null;
+                            args.length > 0 && !maybeOption(args[0]) && (value = args.shift()), this.emit("option:" + option.name(), value);
+                        } else this.emit("option:" + option.name());
+                        continue;
+                    }
+                }
+                if (arg.length > 2 && "-" === arg[0] && "-" !== arg[1]) {
+                    const option = this._findOption("-" + arg[1]);
+                    if (option) {
+                        option.required || option.optional ? this.emit("option:" + option.name(), arg.slice(2)) : (this.emit("option:" + option.name()), 
+                        args.unshift("-" + arg.slice(2)));
+                        continue;
+                    }
+                }
+                if (/^--[^=]+=/.test(arg)) {
+                    const index = arg.indexOf("="), option = this._findOption(arg.slice(0, index));
+                    if (option && (option.required || option.optional)) {
+                        this.emit("option:" + option.name(), arg.slice(index + 1));
+                        continue;
+                    }
+                }
+                arg.length > 1 && "-" === arg[0] && (dest = unknown), dest.push(arg);
+            }
+            return {
+                operands: operands,
+                unknown: unknown
+            };
+        }
+        opts() {
+            if (this._storeOptionsAsProperties) {
+                const result = {}, len = this.options.length;
+                for (let i = 0; i < len; i++) {
+                    const key = this.options[i].attributeName();
+                    result[key] = key === this._versionOptionName ? this._version : this[key];
+                }
+                return result;
+            }
+            return this._optionValues;
+        }
+        missingArgument(name) {
+            const message = `error: missing required argument '${name}'`;
+            console.error(message), this._exit(1, "commander.missingArgument", message);
+        }
+        optionMissingArgument(option, flag) {
+            let message;
+            message = flag ? `error: option '${option.flags}' argument missing, got '${flag}'` : `error: option '${option.flags}' argument missing`, 
+            console.error(message), this._exit(1, "commander.optionMissingArgument", message);
+        }
+        missingMandatoryOptionValue(option) {
+            const message = `error: required option '${option.flags}' not specified`;
+            console.error(message), this._exit(1, "commander.missingMandatoryOptionValue", message);
+        }
+        unknownOption(flag) {
+            if (this._allowUnknownOption) return;
+            const message = `error: unknown option '${flag}'`;
+            console.error(message), this._exit(1, "commander.unknownOption", message);
+        }
+        unknownCommand() {
+            const partCommands = [ this.name() ];
+            for (let parentCmd = this.parent; parentCmd; parentCmd = parentCmd.parent) partCommands.unshift(parentCmd.name());
+            const fullCommand = partCommands.join(" "), message = `error: unknown command '${this.args[0]}'. See '${fullCommand} ${this._helpLongFlag}'.`;
+            console.error(message), this._exit(1, "commander.unknownCommand", message);
+        }
+        version(str, flags, description) {
+            if (void 0 === str) return this._version;
+            this._version = str;
+            const versionOption = new Option(flags = flags || "-V, --version", description = description || "output the version number");
+            return this._versionOptionName = versionOption.long.substr(2) || "version", this.options.push(versionOption), 
+            this.on("option:" + this._versionOptionName, () => {
+                process.stdout.write(str + "\n"), this._exit(0, "commander.version", str);
+            }), this;
+        }
+        description(str, argsDescription) {
+            return void 0 === str && void 0 === argsDescription ? this._description : (this._description = str, 
+            this._argsDescription = argsDescription, this);
+        }
+        alias(alias) {
+            if (void 0 === alias) return this._aliases[0];
+            let command = this;
+            if (0 !== this.commands.length && this.commands[this.commands.length - 1]._executableHandler && (command = this.commands[this.commands.length - 1]), 
+            alias === command._name) throw new Error("Command alias can't be the same as its name");
+            return command._aliases.push(alias), this;
+        }
+        aliases(aliases) {
+            return void 0 === aliases ? this._aliases : (aliases.forEach(alias => this.alias(alias)), 
+            this);
+        }
+        usage(str) {
+            if (void 0 === str) {
+                if (this._usage) return this._usage;
+                const args = this._args.map(arg => humanReadableArgName(arg));
+                return "[options]" + (this.commands.length ? " [command]" : "") + (this._args.length ? " " + args.join(" ") : "");
+            }
+            return this._usage = str, this;
+        }
+        name(str) {
+            return void 0 === str ? this._name : (this._name = str, this);
+        }
+        prepareCommands() {
+            const commandDetails = this.commands.filter(cmd => !cmd._hidden).map(cmd => {
+                const args = cmd._args.map(arg => humanReadableArgName(arg)).join(" ");
+                return [ cmd._name + (cmd._aliases[0] ? "|" + cmd._aliases[0] : "") + (cmd.options.length ? " [options]" : "") + (args ? " " + args : ""), cmd._description ];
+            });
+            return this._lazyHasImplicitHelpCommand() && commandDetails.push([ this._helpCommandnameAndArgs, this._helpCommandDescription ]), 
+            commandDetails;
+        }
+        largestCommandLength() {
+            return this.prepareCommands().reduce((max, command) => Math.max(max, command[0].length), 0);
+        }
+        largestOptionLength() {
+            const options = [].slice.call(this.options);
+            return options.push({
+                flags: this._helpFlags
+            }), options.reduce((max, option) => Math.max(max, option.flags.length), 0);
+        }
+        largestArgLength() {
+            return this._args.reduce((max, arg) => Math.max(max, arg.name.length), 0);
+        }
+        padWidth() {
+            let width = this.largestOptionLength();
+            return this._argsDescription && this._args.length && this.largestArgLength() > width && (width = this.largestArgLength()), 
+            this.commands && this.commands.length && this.largestCommandLength() > width && (width = this.largestCommandLength()), 
+            width;
+        }
+        optionHelp() {
+            const width = this.padWidth(), descriptionWidth = (process.stdout.columns || 80) - width - 4;
+            function padOptionDetails(flags, description) {
+                return pad(flags, width) + "  " + optionalWrap(description, descriptionWidth, width + 2);
+            }
+            const help = this.options.map(option => {
+                const fullDesc = option.description + (option.negate || void 0 === option.defaultValue ? "" : " (default: " + JSON.stringify(option.defaultValue) + ")");
+                return padOptionDetails(option.flags, fullDesc);
+            }), showShortHelpFlag = this._helpShortFlag && !this._findOption(this._helpShortFlag), showLongHelpFlag = !this._findOption(this._helpLongFlag);
+            if (showShortHelpFlag || showLongHelpFlag) {
+                let helpFlags = this._helpFlags;
+                showShortHelpFlag ? showLongHelpFlag || (helpFlags = this._helpShortFlag) : helpFlags = this._helpLongFlag, 
+                help.push(padOptionDetails(helpFlags, this._helpDescription));
+            }
+            return help.join("\n");
+        }
+        commandHelp() {
+            if (!this.commands.length && !this._lazyHasImplicitHelpCommand()) return "";
+            const commands = this.prepareCommands(), width = this.padWidth(), descriptionWidth = (process.stdout.columns || 80) - width - 4;
+            return [ "Commands:", commands.map(cmd => {
+                const desc = cmd[1] ? "  " + cmd[1] : "";
+                return (desc ? pad(cmd[0], width) : cmd[0]) + optionalWrap(desc, descriptionWidth, width + 2);
+            }).join("\n").replace(/^/gm, "  "), "" ].join("\n");
+        }
+        helpInformation() {
+            let desc = [];
+            if (this._description) {
+                desc = [ this._description, "" ];
+                const argsDescription = this._argsDescription;
+                if (argsDescription && this._args.length) {
+                    const width = this.padWidth(), descriptionWidth = (process.stdout.columns || 80) - width - 5;
+                    desc.push("Arguments:"), desc.push(""), this._args.forEach(arg => {
+                        desc.push("  " + pad(arg.name, width) + "  " + wrap(argsDescription[arg.name], descriptionWidth, width + 4));
+                    }), desc.push("");
+                }
+            }
+            let cmdName = this._name;
+            this._aliases[0] && (cmdName = cmdName + "|" + this._aliases[0]);
+            let parentCmdNames = "";
+            for (let parentCmd = this.parent; parentCmd; parentCmd = parentCmd.parent) parentCmdNames = parentCmd.name() + " " + parentCmdNames;
+            const usage = [ "Usage: " + parentCmdNames + cmdName + " " + this.usage(), "" ];
+            let cmds = [];
+            const commandHelp = this.commandHelp();
+            commandHelp && (cmds = [ commandHelp ]);
+            const options = [ "Options:", "" + this.optionHelp().replace(/^/gm, "  "), "" ];
+            return usage.concat(desc).concat(options).concat(cmds).join("\n");
+        }
+        outputHelp(cb) {
+            cb || (cb = passthru => passthru);
+            const cbOutput = cb(this.helpInformation());
+            if ("string" != typeof cbOutput && !Buffer.isBuffer(cbOutput)) throw new Error("outputHelp callback must return a string or a Buffer");
+            process.stdout.write(cbOutput), this.emit(this._helpLongFlag);
+        }
+        helpOption(flags, description) {
+            this._helpFlags = flags || this._helpFlags, this._helpDescription = description || this._helpDescription;
+            const splitFlags = this._helpFlags.split(/[ ,|]+/);
+            return this._helpShortFlag = void 0, splitFlags.length > 1 && (this._helpShortFlag = splitFlags.shift()), 
+            this._helpLongFlag = splitFlags.shift(), this;
+        }
+        help(cb) {
+            this.outputHelp(cb), this._exit(process.exitCode || 0, "commander.help", "(outputHelp)");
+        }
+        _helpAndError() {
+            this.outputHelp(), this._exit(1, "commander.help", "(outputHelp)");
+        }
+    }
+    function pad(str, width) {
+        const len = Math.max(0, width - str.length);
+        return str + Array(len + 1).join(" ");
+    }
+    function wrap(str, width, indent) {
+        const regex = new RegExp(".{1," + (width - 1) + "}([\\s​]|$)|[^\\s​]+?([\\s​]|$)", "g");
+        return (str.match(regex) || []).map((line, i) => ("\n" === line.slice(-1) && (line = line.slice(0, line.length - 1)), 
+        (i > 0 && indent ? Array(indent + 1).join(" ") : "") + line.trimRight())).join("\n");
+    }
+    function optionalWrap(str, width, indent) {
+        if (str.match(/[\n]\s+/)) return str;
+        return width < 40 ? str : wrap(str, width, indent);
+    }
+    function outputHelpIfRequested(cmd, args) {
+        args.find(arg => arg === cmd._helpLongFlag || arg === cmd._helpShortFlag) && (cmd.outputHelp(), 
+        cmd._exit(0, "commander.helpDisplayed", "(outputHelp)"));
+    }
+    function humanReadableArgName(arg) {
+        const nameOutput = arg.name + (!0 === arg.variadic ? "..." : "");
+        return arg.required ? "<" + nameOutput + ">" : "[" + nameOutput + "]";
+    }
+    function incrementNodeInspectorPort(args) {
+        return args.map(arg => {
+            let result = arg;
+            if (0 === arg.indexOf("--inspect")) {
+                let debugOption, match, debugHost = "127.0.0.1", debugPort = "9229";
+                null !== (match = arg.match(/^(--inspect(-brk)?)$/)) ? debugOption = match[1] : null !== (match = arg.match(/^(--inspect(-brk|-port)?)=([^:]+)$/)) ? (debugOption = match[1], 
+                /^\d+$/.test(match[3]) ? debugPort = match[3] : debugHost = match[3]) : null !== (match = arg.match(/^(--inspect(-brk|-port)?)=([^:]+):(\d+)$/)) && (debugOption = match[1], 
+                debugHost = match[3], debugPort = match[4]), debugOption && "0" !== debugPort && (result = `${debugOption}=${debugHost}:${parseInt(debugPort) + 1}`);
+            }
+            return result;
+        });
+    }
+    (exports = module.exports = new Command).program = exports, exports.Command = Command, 
+    exports.Option = Option, exports.CommanderError = CommanderError;
+}, function(module, exports) {
+    module.exports = require("child_process");
+}, function(module, exports) {
+    module.exports = require("./index");
+}, function(module) {
+    module.exports = JSON.parse('{"name":"yarn-deduplicate","version":"2.2.0"}');
+} ]);
