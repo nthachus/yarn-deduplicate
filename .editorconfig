@@ -9,8 +9,9 @@ charset = utf-8
 trim_trailing_whitespace = true
 insert_final_newline = true
 
-[*.{js,ts}]
-indent_size = 4
+max_line_length = 100
+quote_type = single
 
 [*.md]
 trim_trailing_whitespace = false
+max_line_length = off
