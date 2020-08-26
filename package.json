@@ -1,8 +1,10 @@
 {
-  "name": "yarn-deduplicate",
+  "name": "yarn-deduplicate-cli",
   "version": "2.2.0",
-  "bin": "./cli.js",
-  "description": "Deduplication tool for yarn.lock files",
+  "bin": {
+    "yarn-deduplicate": "index.js"
+  },
+  "description": "CLI bundle of yarn-deduplicate, a deduplication tool for yarn.lock files",
   "keywords": [
     "yarn",
     "yarn.lock",
@@ -12,27 +14,34 @@
     "dedupe",
     "deduplicate"
   ],
-  "homepage": "https://github.com/atlassian/yarn-deduplicate#readme",
-  "bugs": "https://github.com/atlassian/yarn-deduplicate/issues",
+  "scripts": {
+    "build": "rimraf index.js && webpack --progress --display-modules",
+    "clean": "rimraf index.js node_modules/.cache"
+  },
+  "homepage": "https://github.com/nthachus/yarn-deduplicate-cli#readme",
   "license": "Apache-2.0",
-  "author": "Sergio Cinos <sergio.cinos@gmail.com>",
-  "main": "index.js",
+  "author": "Thach Nguyen (https://github.com/nthachus)",
+  "files": [
+    "index.js"
+  ],
   "repository": {
     "type": "git",
-    "url": "git@github.com:atlassian/yarn-deduplicate.git"
+    "url": "https://github.com/nthachus/yarn-deduplicate-cli.git"
   },
   "engines": {
     "node": ">=6"
   },
-  "jest": {
-    "cacheDirectory": "node_modules/.cache/jest",
-    "testPathIgnorePatterns": [
-      "<rootDir>/node_modules"
-    ]
+  "devDependencies": {
+    "@babel/core": "^7.8.3",
+    "@babel/preset-env": "^7.8.3",
+    "babel-loader": "^8.0.6",
+    "string-replace-loader": "^2.2.0",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.12",
+    "yarn-deduplicate": "^2.1.1"
   },
-  "prettier": {
-    "printWidth": 100,
-    "singleQuote": true,
-    "trailingComma": "es5"
+  "resolutions": {
+    "global-modules": "^2.0.0",
+    "enhanced-resolve": "^4.1.0"
   }
 }
