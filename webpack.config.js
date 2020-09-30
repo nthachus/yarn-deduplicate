@@ -4,7 +4,7 @@ const TerserPlugin = require('terser-webpack-plugin');
 const pkg = require('./package.json');
 
 const patches = [
-  '\\bObject\\.keys\\(json\\)\\.forEach\\(.*?, packageName, requestedVersion\\] = match;',
+  '\\bObject\\.keys\\(json\\)\\.forEach\\([\\s\\S]*?, packageName, requestedVersion\\] = match;',
   `let resolvable = null;
   if (includeScopes.length) {
     includeScopes = includeScopes.filter(v => !['^', '~', '*'].includes(v) || !(resolvable = v));
@@ -50,7 +50,7 @@ module.exports = {
       {
         test: path.resolve(__dirname, 'node_modules/yarn-deduplicate/index.js'),
         loader: 'string-replace-loader',
-        options: { search: patches[0], flags: 's', replace: patches[1] },
+        options: { search: patches[0], flags: '', replace: patches[1] },
       },
       {
         test: path.resolve(__dirname, 'node_modules/yarn-deduplicate/cli.js'),
